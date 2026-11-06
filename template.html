@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IPG SEO Dashboard</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14181f;--ink2:#4a5360;--mute:#7b8594;--line:#e3e6eb;--acc:#2563c9;--acc-rgb:37,99,201;--good:#1a7f4b;--bad:#b3261e;--warn:#9a6700;--warnbg:#fff6dd;
+--z1:#0b3d91;--z2:#2563c9;--z3:#5b94e6;--z4:#9bbcf0;--z5:#cfdff8;--hi:rgba(37,99,201,.9)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1319;--card:#171c24;--ink:#e8ebf0;--ink2:#aab3c0;--mute:#7f8998;--line:#2a313c;--acc:#6ea2f5;--acc-rgb:110,162,245;--good:#5fd39a;--bad:#ff8a80;--warn:#e9b949;--warnbg:#2b2411;--z1:#a9c8ff;--z2:#75a5f5;--z3:#4a7fdb;--z4:#2f5aa8;--z5:#213d70}}
+:root[data-theme=dark]{--bg:#0f1319;--card:#171c24;--ink:#e8ebf0;--ink2:#aab3c0;--mute:#7f8998;--line:#2a313c;--acc:#6ea2f5;--acc-rgb:110,162,245;--good:#5fd39a;--bad:#ff8a80;--warn:#e9b949;--warnbg:#2b2411;--z1:#a9c8ff;--z2:#75a5f5;--z3:#4a7fdb;--z4:#2f5aa8;--z5:#213d70}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 0;max-width:1400px;margin:0 auto}
+h1{font-size:20px;margin:0 0 2px}h2{font-size:16px;margin:0 0 4px}h3{font-size:13px;margin:0 0 6px;color:var(--ink2);font-weight:600}
+.sub{color:var(--mute);font-size:12.5px}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-top:14px;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--ink2);padding:9px 12px;font:inherit;font-weight:600;cursor:pointer}
+nav button[aria-selected=true]{color:var(--acc);border-bottom-color:var(--acc)}
+main{max-width:1400px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+.tile .l{font-size:12px;color:var(--mute)}.tile .v{font-size:26px;font-weight:700;letter-spacing:-.5px}.tile .d{font-size:12px}
+.up{color:var(--good)}.dn{color:var(--bad)}.flat{color:var(--mute)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:var(--card);border:0;border-right:1px solid var(--line);color:var(--ink2);padding:6px 10px;font:inherit;cursor:pointer}
+.seg button:last-child{border-right:0}.seg button[aria-pressed=true]{background:var(--acc);color:#fff}
+input[type=search],select,input[type=text],input[type=month]{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+.tw{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right}
+th{position:sticky;top:0;background:var(--card);z-index:2;color:var(--ink2);font-weight:600;cursor:default}
+th.s{cursor:pointer}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--card);z-index:1}th:first-child{z-index:3}
+td.l,th.l{text-align:left}td.wrap{white-space:normal;min-width:220px;text-align:left}
+tr.grp td{background:var(--bg);font-weight:700;color:var(--ink2);text-align:left}
+tr.tot td{font-weight:700;border-top:2px solid var(--line)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin:6px 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.note{background:var(--warnbg);border:1px solid var(--warn);color:var(--ink);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px}
+.note b{color:var(--warn)}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--mute);font-size:11px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:12px;z-index:50;display:none;max-width:260px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;border:1px solid var(--line);color:var(--ink2)}
+.pill.ok{color:var(--good);border-color:var(--good)}.pill.pl{color:var(--warn);border-color:var(--warn)}.pill.no{color:var(--mute)}
+button.b{font:inherit;padding:6px 10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer}
+button.b.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+a{color:var(--acc)}
+.tl{border-left:2px solid var(--line);margin-left:6px;padding-left:14px}
+.tl .m{font-weight:700;margin:14px 0 6px;position:relative}.tl .m:before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.tl .it{padding:4px 0;border-bottom:1px dashed var(--line)}.tl .it small{color:var(--mute)}
+@media(max-width:600px){main{padding:12px}.tile .v{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+ <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+  <div><h1>IPG SEO dashboard — industrialpumps.nl</h1>
+  <div class="sub">Google Search Console · Jan–Oct 2026 · GA4 organic sessions Mar–Oct 2026 · keyword research list (Apr–Aug 2026)</div></div>
+  <button class="b" id="theme" title="Switch light / dark">Light / dark</button>
+ </div>
+ <div class="bar" id="range" style="margin:12px 0 0"><b>Report period</b>
+  <label>From <select id="rf"></select></label><label>to <select id="rt"></select></label>
+  <div class="seg" id="presets"><button data-p="all">Jan–Oct</button><button data-p="ga">Mar–Oct</button><button data-p="6">Last 6 months</button><button data-p="3">Last 3 months</button><button data-p="q3">Q3</button></div>
+  <span class="sub" id="rl"></span></div>
+ <nav role="tablist" id="nav"></nav>
+</header>
+<main>
+ <section id="t1"></section><section id="t2"></section><section id="t3"></section><section id="t4"></section><section id="t5"></section>
+</main>
+<div id="tip"></div>
+<script>
+const FULL=__DATA__;
+let DATA=FULL,M,NM,LAST,OFF=0,PG=[];
+const ACT=__ACT__;
+const PLAN=__PLAN__;
+const $=s=>document.querySelector(s);
+const nf=n=>n==null?'–':Math.round(n).toLocaleString('en-US');
+const pf=n=>n==null?'–':n.toFixed(1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sum=a=>a.reduce((x,y)=>x+(y||0),0);
+function tip(el,html){el.addEventListener('mousemove',e=>{const t=$('#tip');t.innerHTML=html;t.style.display='block';t.style.left=Math.min(e.clientX+12,innerWidth-270)+'px';t.style.top=(e.clientY+14)+'px'});el.addEventListener('mouseleave',()=>$('#tip').style.display='none')}
+function bindTips(root){root.querySelectorAll('[data-tip]').forEach(el=>tip(el,el.getAttribute('data-tip')))}
+function delta(a,b,lowerBetter){if(a==null||b==null)return '<span class="flat">–</span>';const d=a-b;if(Math.abs(d)<.05)return '<span class="flat">0</span>';const good=lowerBetter?d<0:d>0;return `<span class="${good?'up':'dn'}">${d>0?'+':''}${Number.isInteger(d)?d:d.toFixed(1)}</span>`}
+// ---------- tabs
+const TABS=['1 · Keyword rankings','2 · Topics (Search Console)','3 · Traffic','4 · New & updated pages','5 · Activities'];
+$('#nav').innerHTML=TABS.map((t,i)=>`<button role="tab" aria-selected="${i==0}" data-i="${i}">${t}</button>`).join('');
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;document.querySelectorAll('#nav button').forEach((x,j)=>x.setAttribute('aria-selected',j==i));document.querySelectorAll('section').forEach((s,j)=>s.classList.toggle('on',j==i));try{localStorage.setItem('ipgtab',i)}catch(_){}});
+$('#theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark'};
+// ---------- charts
+function stackedBars(el,series,labels,colors,names){ // series[k][m]
+ const W=720,H=240,L=38,B=26,T=10,R=8,n=labels.length,bw=(W-L-R)/n;
+ const tot=labels.map((_,m)=>series.reduce((s,a)=>s+a[m],0));const mx=Math.max(...tot,1);
+ const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));return Math.ceil(v/p/ (v/p>5?2:1))*p*(v/p>5?2:1)};const top=nice(mx);
+ let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chart">`;
+ for(let i=0;i<=4;i++){const y=T+(H-T-B)*(1-i/4);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+4}" text-anchor="end">${nf(top*i/4)}</text>`}
+ labels.forEach((lb,m)=>{let y=H-B;const x=L+m*bw+bw*.18,w=bw*.64;const tp=names.map((nm,k)=>`${nm}: <b>${nf(series[k][m])}</b>`).join('<br>');
+  series.forEach((a,k)=>{const h=(H-T-B)*a[m]/top;if(h<=0)return;y-=h;s+=`<rect x="${x}" y="${y}" width="${w}" height="${Math.max(h-1.5,.5)}" rx="2" fill="${colors[k]}"/>`});
+  s+=`<rect x="${L+m*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="<b>${lb}</b><br>${tp}"/><text x="${x+w/2}" y="${H-8}" text-anchor="middle">${lb}</text>`});
+ el.innerHTML=s+'</svg>';bindTips(el)}
+function lines(el,series,labels,colors,names,opt={}){
+ const W=720,H=230,L=42,B=26,T=10,R=12,n=labels.length;const all=series.flat().filter(v=>v!=null);let mn=opt.zero===false?Math.min(...all):0,mx=Math.max(...all,1);if(opt.zero===false){const pad=(mx-mn)*.1||1;mn-=pad;mx+=pad}
+ const X=m=>L+(W-L-R)*(m/(n-1||1)),Y=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn||1));
+ if(opt.reverse){}
+ let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+ for(let i=0;i<=4;i++){const v=mn+(mx-mn)*i/4,y=Y(v);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+4}" text-anchor="end">${opt.dec?v.toFixed(1):nf(v)}</text>`}
+ labels.forEach((lb,m)=>s+=`<text x="${X(m)}" y="${H-8}" text-anchor="middle">${lb}</text>`);
+ series.forEach((a,k)=>{let d='';a.forEach((v,m)=>{if(v!=null)d+=(d?'L':'M')+X(m)+' '+Y(v)});s+=`<path d="${d}" fill="none" stroke="${colors[k]}" stroke-width="2"/>`;a.forEach((v,m)=>{if(v!=null)s+=`<circle cx="${X(m)}" cy="${Y(v)}" r="3.5" fill="${colors[k]}" stroke="var(--card)" stroke-width="2"/>`})});
+ labels.forEach((lb,m)=>{const tp=names.map((nm,k)=>`${nm}: <b>${opt.dec?pf(series[k][m]):nf(series[k][m])}</b>`).join('<br>');s+=`<rect x="${X(m)-(W-L-R)/(n-1||1)/2}" y="${T}" width="${(W-L-R)/(n-1||1)}" height="${H-T-B}" fill="transparent" data-tip="<b>${lb}</b><br>${tp}"/>`});
+ el.innerHTML=s+'</svg>';bindTips(el)}
+function legend(names,colors){return '<div class="legend">'+names.map((n,i)=>`<span><i style="background:${colors[i]}"></i>${n}</span>`).join('')+'</div>'}
+function heat(v,lo,hi,rev){if(v==null)return '';let r=hi>lo?(v-lo)/(hi-lo):0;if(rev)r=1-r;return `background:rgba(var(--acc-rgb),${(.08+r*.42).toFixed(2)})`}
+// ---------- TAB 1
+const ZN=['Top 3','Top 10','Top 20','Top 50','Top 100'];
+const BANDS=['Positions 1–3','4–10','11–20','21–50','51–100'];
+let t1set='sel';
+function t1(){
+ const Z=t1set==='sel'?DATA.zSel:DATA.zFull,N=t1set==='sel'?DATA.selN:DATA.fullN;
+ const cur=Z[LAST],prv=Z[LAST-1];
+ const bandSeries=[0,1,2,3,4].map(i=>Z.map(x=>x.z[i]-(i?x.z[i-1]:0)));
+ const cols=['var(--z1)','var(--z2)','var(--z3)','var(--z4)','var(--z5)'];
+ let h=`<div class="bar"><div class="seg" id="setSeg"><button data-s="sel" aria-pressed="${t1set==='sel'}">Selected keywords (${DATA.selN})</button><button data-s="full" aria-pressed="${t1set==='full'}">Full research list (${nf(DATA.fullN)})</button></div>
+ <span class="sub">Position = Search Console average position for the month (impression-weighted). A keyword with no impressions in a month counts as not ranking.</span></div>`;
+ h+='<div class="tiles">'+ZN.map((z,i)=>`<div class="tile"><div class="l">Keywords in ${z.toLowerCase()} · ${M[LAST]}</div><div class="v">${cur.z[i]}</div><div class="d">${delta(cur.z[i],prv.z[i])} vs ${M[LAST-1]} · ${(100*cur.z[i]/N).toFixed(0)}% of ${nf(N)}</div></div>`).join('')+'</div>';
+ h+=`<div class="grid2"><div class="card"><h2>Keywords by ranking zone, month by month</h2><div class="sub">Each bar = the ${nf(N)} keywords split by where they rank</div>${legend(BANDS,cols)}<div id="c1"></div></div>
+ <div class="card"><h2>Cumulative zones</h2><div class="sub">Top 10 includes the top 3, and so on</div>${legend(ZN,['var(--z1)','var(--z2)','var(--z3)','var(--z4)','var(--z5)'])}<div id="c2"></div></div></div>`;
+ h+=`<div class="card"><h2>Zone table</h2><div class="tw"><table><thead><tr><th>Zone</th>${M.map(m=>`<th>${m}</th>`).join('')}<th>${M[LAST]} vs ${M[LAST-1]}</th></tr></thead><tbody>`;
+ ZN.forEach((z,i)=>{const row=Z.map(x=>x.z[i]);h+=`<tr><td>${z}</td>${row.map(v=>`<td style="${heat(v,Math.min(...row),Math.max(...row))}">${v}</td>`).join('')}<td>${delta(row[LAST],row[LAST-1])}</td></tr>`});
+ const nr=Z.map(x=>N-x.z[4]);h+=`<tr class="tot"><td>Not in top 100 / not visible</td>${nr.map(v=>`<td>${v}</td>`).join('')}<td>${delta(nr[LAST],nr[LAST-1],true)}</td></tr></tbody></table></div></div>`;
+ h+=`<div class="card"><h2>Selected keywords — position by month</h2><div class="bar"><input type="search" id="kq" placeholder="Search keyword…"><select id="kt"><option value="">All topics</option>${[...new Set(DATA.selRows.map(r=>r.t))].sort().map(t=>`<option>${esc(t)}</option>`).join('')}</select><span class="sub" id="kc"></span></div><div class="tw"><table id="ktab"></table></div></div>`;
+ $('#t1').innerHTML=h;
+ stackedBars($('#c1'),bandSeries,M,cols,BANDS);
+ lines($('#c2'),[0,1,2,3,4].map(i=>Z.map(x=>x.z[i])),M,cols,ZN);
+ $('#setSeg').onclick=e=>{const b=e.target.closest('button');if(b){t1set=b.dataset.s;t1()}};
+ $('#kq').oninput=kt;$('#kt').onchange=kt;kt();
+}
+let ksort={c:'p9',d:1};
+function kt(){
+ const q=($('#kq').value||'').toLowerCase(),tp=$('#kt').value;
+ let rows=DATA.selRows.filter(r=>(!tp||r.t===tp)&&(!q||r.k.includes(q)||(r.en||'').toLowerCase().includes(q)));
+ const key=r=>ksort.c==='k'?r.k:ksort.c==='sv'?(r.sv??-1):ksort.c==='c'?r.c[LAST]:ksort.c==='i'?r.i[LAST]:(r.p[+ksort.c.slice(1)]??999);
+ rows.sort((a,b)=>{const x=key(a),y=key(b);return (x>y?1:x<y?-1:0)*ksort.d*(ksort.c==='sv'||ksort.c==='c'||ksort.c==='i'?-1:1)});
+ $('#kc').textContent=rows.length+' keywords';
+ let h=`<thead><tr><th class="s" data-c="k">Keyword</th><th class="l">Topic</th><th class="s" data-c="sv">Searches/mo</th>${M.map((m,i)=>`<th class="s" data-c="p${i}">${m}</th>`).join('')}<th class="s" data-c="c">${M[LAST]} clicks</th><th class="s" data-c="i">${M[LAST]} impr.</th></tr></thead><tbody>`;
+ rows.forEach(r=>{h+=`<tr><td title="${esc(r.en||'')}">${esc(r.k)}</td><td class="l">${esc(r.t)}</td><td>${r.sv==null?'–':nf(r.sv)}</td>${r.p.map(p=>`<td style="${p==null?'':heat(Math.min(p,100),1,60,true)}">${p==null?'':pf(p)}</td>`).join('')}<td>${nf(r.c[LAST])}</td><td>${nf(r.i[LAST])}</td></tr>`});
+ const t=$('#ktab');t.innerHTML=h+'</tbody>';t.querySelectorAll('th.s').forEach(th=>th.onclick=()=>{const c=th.dataset.c;ksort=ksort.c===c?{c,d:-ksort.d}:{c,d:1};kt()});
+}
+// ---------- topic tables
+function topicTable(rows,opt){ // rows: {n,kind,cl,im,pos,...}
+ const metrics=opt.metrics,mk=opt.state.m;const mt=metrics.find(x=>x.k===mk);
+ const kinds=opt.kinds;let h=`<div class="tw"><table><thead><tr><th>Topic</th>${opt.extraH||''}${M.map(m=>`<th>${m}</th>`).join('')}<th>${mt.sumLabel||'Total'}</th><th>${M[LAST]} vs ${M[LAST-1]}</th></tr></thead><tbody>`;
+ const tot=Array(NM).fill(0);let totx=0;
+ kinds.forEach(([kd,label])=>{const rs=rows.filter(r=>r.kind===kd).sort((a,b)=>mt.rank(b)-mt.rank(a));if(!rs.length)return;
+  h+=`<tr class="grp"><td colspan="${NM+3+(opt.extraN||0)}">${label}</td></tr>`;
+  rs.forEach(r=>{const v=mt.get(r);const lo=Math.min(...v.filter(x=>x!=null)),hi=Math.max(...v.filter(x=>x!=null));
+   if(mt.sums)v.forEach((x,i)=>tot[i]+=x||0);
+   h+=`<tr><td>${esc(r.n)}</td>${opt.extra?opt.extra(r):''}${v.map(x=>`<td style="${heat(x,lo,hi,mt.lower)}">${mt.dec?pf(x):nf(x)}</td>`).join('')}<td><b>${mt.sums?nf(sum(v)):mt.dec?pf(mt.agg?mt.agg(r):null):nf(Math.max(...v.map(x=>x||0)))}</b></td><td>${delta(v[LAST],v[LAST-1],mt.lower)}</td></tr>`})});
+ if(mt.sums)h+=`<tr class="tot"><td>Total</td>${opt.extraEmpty||''}${tot.map(x=>`<td>${nf(x)}</td>`).join('')}<td>${nf(sum(tot))}</td><td>${delta(tot[LAST],tot[LAST-1])}</td></tr>`;
+ return h+'</tbody></table></div>'}
+const KINDS=[['Brand','Brands'],['Pump type','Pump types'],['IPG','IPG own brand'],['Service','Service'],['Content','Content'],['Shop','Webshop'],['Other','Other']];
+const MET2=[
+ {k:'cl',label:'Clicks',get:r=>r.cl,sums:true,rank:r=>sum(r.cl)},
+ {k:'im',label:'Impressions',get:r=>r.im,sums:true,rank:r=>sum(r.im)},
+ {k:'pos',label:'Avg position',get:r=>r.pos,dec:true,lower:true,rank:r=>sum(r.cl)*1e3+sum(r.im)/1e3,agg:r=>{const i=sum(r.im);return i?r.pos.reduce((s,p,m)=>s+(p||0)*r.im[m],0)/i:null},sumLabel:'Avg (weighted)'},
+ ...[0,1,2,3,4].map(i=>({k:'z'+i,label:'KWs in '+ZN[i].toLowerCase(),get:r=>r.z.map(x=>x[i]),rank:r=>sum(r.cl)*1e3+sum(r.im)/1e3,sumLabel:'Best month'}))];
+let st2={m:'cl'};
+function t2(){
+ const n0=DATA.topics.filter(t=>t.kw||t.cl.some(x=>x));
+ let h=`<div class="note" style="background:var(--card);border-color:var(--line)"><b style="color:var(--ink)">How topics work.</b> Every search query in Search Console is assigned to one topic by the pump brand or pump type in the query (brand wins: “lowara dompelpomp” counts for Lowara). Keyword counts and searches/month come from the keyword research list (${nf(DATA.fullN)} keywords). The “KWs in top N” views count research-list keywords per topic that Google showed at that position in the month.</div>
+ <div class="card"><h2>Topic-wise rankings, month by month</h2><div class="bar"><div class="seg" id="m2">${MET2.map(m=>`<button data-k="${m.k}" aria-pressed="${st2.m===m.k}">${m.label}</button>`).join('')}</div></div><div id="tt2"></div></div>`;
+ $('#t2').innerHTML=h;
+ const draw=()=>{$('#tt2').innerHTML=topicTable(n0,{metrics:MET2,state:st2,kinds:KINDS,extraH:'<th>KWs in list</th><th>Selected</th><th>Searches/mo</th>',extraN:3,extraEmpty:'<td></td><td></td><td></td>',extra:r=>`<td>${nf(r.kw)}</td><td>${r.sel||'–'}</td><td>${nf(r.sv)}</td>`});};
+ draw();
+ $('#m2').onclick=e=>{const b=e.target.closest('button');if(!b)return;st2.m=b.dataset.k;$('#m2').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()};
+}
+// ---------- TAB 3
+let st3={m:'cl'};
+const MET3=[MET2[0],MET2[1],MET2[2]];
+function t3(){
+ const g=DATA.ga,gt=DATA.gtot;
+ const flyShare=sum(gt)?(sum(g.filter(x=>x.n==='Flygt').map(x=>sum(x.s)))/sum(gt)*100).toFixed(0):'–';
+ let h=`<div class="note"><b>Check the GA4 export.</b> The GA4 file you attached shows ${nf(sum(gt))} organic sessions for Mar–Oct, and ${flyShare}% of them land on Flygt pages (a handful of other landing pages appear only once or twice). It looks filtered to Flygt. GSC shows ~110–150 clicks a month across the whole site, so the GA4 figure here is not whole-site traffic. Re-export GA4 without the landing-page filter and send it, and I will refresh this tab.</div>
+ <div class="tiles">${M.map((_,i)=>i).filter(m=>m+OFF>=2).slice(-4).map(m=>`<div class="tile"><div class="l">GA4 organic sessions · ${M[m]}</div><div class="v">${nf(gt[m])}</div><div class="d">${m>0&&m+OFF>2?delta(gt[m],gt[m-1])+' vs prev month':''}</div></div>`).join('')}<div class="tile"><div class="l">GSC clicks · ${M[LAST]} (all pages)</div><div class="v">${nf(DATA.totals.lpcl[LAST])}</div><div class="d">${delta(DATA.totals.lpcl[LAST],DATA.totals.lpcl[LAST-1])} vs ${M[LAST-1]}</div></div></div>
+ <div class="grid2"><div class="card"><h2>GA4 organic sessions by month</h2><div class="sub">As exported (Mar–Oct)</div><div id="c3"></div></div>
+ <div class="card"><h2>GSC clicks, whole site</h2><div class="sub">Jan–Oct, all landing pages</div><div id="c4"></div></div></div>
+ <div class="card"><h2>GSC impressions, whole site</h2><div id="c4b"></div></div>
+ <div class="card"><h2>GA4 organic sessions by topic (from landing page)</h2><div class="tw"><table><thead><tr><th>Topic</th>${M.map(m=>`<th>${m}</th>`).join('')}<th>Total</th><th>${M[LAST]} vs ${M[LAST-1]}</th></tr></thead><tbody>`;
+ g.sort((a,b)=>sum(b.s)-sum(a.s)).forEach(r=>{h+=`<tr><td>${esc(r.n)} <span class="sub">(${r.pages.length} pages)</span></td>${r.s.map((v,m)=>`<td style="${m+OFF<2?'':heat(v,0,Math.max(...r.s))}">${m+OFF<2?'n/a':nf(v)}</td>`).join('')}<td><b>${nf(sum(r.s))}</b></td><td>${delta(r.s[LAST],r.s[LAST-1])}</td></tr>`});
+ h+=`<tr class="tot"><td>Total (GA4 export)</td>${gt.map((v,m)=>`<td>${m+OFF<2?'n/a':nf(v)}</td>`).join('')}<td>${nf(sum(gt))}</td><td>${delta(gt[LAST],gt[LAST-1])}</td></tr></tbody></table></div></div>
+ <div class="card"><h2>Landing-page topics — Search Console clicks and impressions (whole site)</h2><div class="sub">Pages grouped by topic from the URL (e.g. /pompen/merken/lowara/… counts for Lowara).</div><div class="bar" style="margin-top:8px"><div class="seg" id="m3">${MET3.map(m=>`<button data-k="${m.k}" aria-pressed="${st3.m===m.k}">${m.label}</button>`).join('')}</div></div><div id="tt3"></div></div>
+ <div class="card"><h2>Top landing pages (Search Console)</h2><div class="bar"><input type="search" id="pq" placeholder="Filter by URL…"></div><div class="tw"><table id="ptab"></table></div></div>`;
+ $('#t3').innerHTML=h;
+ stackedBars($('#c3'),[gt],M,['var(--z2)'],['Sessions']);
+ lines($('#c4'),[DATA.totals.lpcl],M,['var(--z2)'],['Clicks']);
+ lines($('#c4b'),[DATA.totals.lpim],M,['var(--z2)'],['Impressions']);
+ const draw=()=>$('#tt3').innerHTML=topicTable(DATA.ltopics,{metrics:MET3,state:st3,kinds:KINDS,extraH:'<th>Pages</th>',extraN:1,extraEmpty:'<td></td>',extra:r=>`<td>${nf(r.pages)}</td>`});
+ draw();$('#m3').onclick=e=>{const b=e.target.closest('button');if(!b)return;st3.m=b.dataset.k;$('#m3').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()};
+ const pt=()=>{const q=($('#pq').value||'').toLowerCase();const rows=DATA.pages.filter(p=>!p.u.startsWith('/Admin')&&(!q||p.u.toLowerCase().includes(q))).sort((a,b)=>sum(b.cl)-sum(a.cl)).slice(0,60);
+  $('#ptab').innerHTML=`<thead><tr><th>Page</th><th class="l">Topic</th>${M.map(m=>`<th>${m}</th>`).join('')}<th>Clicks</th><th>Impr.</th></tr></thead><tbody>${rows.map(p=>`<tr><td title="${esc(p.u)}">${esc(p.u.length>60?p.u.slice(0,58)+'…':p.u)}</td><td class="l">${esc(p.t)}</td>${p.cl.map(v=>`<td style="${heat(v,0,Math.max(...p.cl))}">${v||''}</td>`).join('')}<td><b>${nf(sum(p.cl))}</b></td><td>${nf(sum(p.im))}</td></tr>`).join('')}</tbody>`};
+ $('#pq').oninput=pt;pt();
+}
+// ---------- TAB 4
+let st4={m:-1};
+const LOGKEY='ipg-change-log-v1';
+const SEED=[
+ {type:'Updated',date:'2026-05',url:'/pompen/toepassingen/koelwater',note:'On-page recommendations for the cooling-water pump page delivered 28 May (Koel Water Pomp xlsx)',status:'To confirm'},
+ {type:'New',date:'2026-09',url:'/pompen/toepassingen/boiler-feed/boiler-feed-pompen-werking',note:'Boiler Feed Pump “working principle” page (content drafted Apr 2026)',status:'To confirm'},
+ {type:'Updated',date:'2026-11',url:'/pompen/pomptypen/hydrofoor-units',note:'Planned: new title, description, FAQ and enquiry button (action plan A1, weeks of 9–16 Nov)',status:'Planned'}
+];
+function loadLog(){try{const s=localStorage.getItem(LOGKEY);if(s)return JSON.parse(s)}catch(_){}return SEED.map(x=>({...x}))}
+function saveLog(l){try{localStorage.setItem(LOGKEY,JSON.stringify(l))}catch(_){}}
+let LOG=loadLog();
+function mIdx(d){const m=/^(\d{4})-(\d{2})/.exec(d||'');if(!m||m[1]!=='2026')return -1;const i=+m[2]-1-OFF;return i>=0&&i<NM?i:-1}
+function t4(){
+ const first=PG.filter(p=>p.f>0);const byM=M.map((_,m)=>first.filter(p=>p.f===m));
+ const newCl=M.map((_,m)=>sum(first.filter(p=>p.f<=m).map(p=>p.cl[m]))),newIm=M.map((_,m)=>sum(first.filter(p=>p.f<=m).map(p=>p.im[m])));
+ const cnt=byM.map(a=>a.length),cum=cnt.reduce((a,v,i)=>(a.push((a[i-1]||0)+v),a),[]);
+ const topics=[...new Set(first.map(p=>p.t))].sort((a,b)=>first.filter(p=>p.t===b).length-first.filter(p=>p.t===a).length);
+ let h=`<div class="note" style="background:var(--card);border-color:var(--line)"><b style="color:var(--ink)">How pages are tracked.</b> <b>New pages</b> are detected automatically: a page counts as new in the first month it gets impressions in Google (${M[0]} is the starting baseline of this period: ${byM[0].length} pages already showing). That is when Google first showed it, which can be a little after it went live. <b>Updated pages</b> cannot be seen in the data, so they live in the change log below. Add what you changed and the dashboard shows impressions and clicks before and after.</div>
+ <div class="tiles"><div class="tile"><div class="l">Pages already showing in ${M[0]} (baseline)</div><div class="v">${byM[0].length}</div></div><div class="tile"><div class="l">New pages ${M[1]}–${M[LAST]}</div><div class="v">${first.length}</div></div><div class="tile"><div class="l">New pages in ${M[LAST]}</div><div class="v">${cnt[LAST]}</div><div class="d">${delta(cnt[LAST],cnt[LAST-1])} vs ${M[LAST-1]}</div></div><div class="tile"><div class="l">${M[LAST]} clicks from new pages</div><div class="v">${nf(newCl[LAST])}</div><div class="d">${nf(newIm[LAST])} impressions</div></div></div>
+ <div class="grid2"><div class="card"><h2>New pages per month</h2><div class="sub">First month the page appeared in Google</div><div id="c5"></div></div><div class="card"><h2>Impressions from pages added during this period</h2><div class="sub">Cumulative effect of new pages</div><div id="c6"></div></div></div>
+ <div class="card"><h2>New pages by topic and month</h2><div class="tw"><table><thead><tr><th>Topic</th>${M.slice(1).map(m=>`<th>${m}</th>`).join('')}<th>Total</th><th>Impr. ${M[LAST]}</th><th>Clicks ${M[LAST]}</th></tr></thead><tbody>${topics.map(t=>{const v=M.slice(1).map((_,i)=>first.filter(p=>p.t===t&&p.f===i+1).length);const ps=first.filter(p=>p.t===t);return `<tr><td>${esc(t)}</td>${v.map(x=>`<td style="${heat(x,0,Math.max(...v))}">${x||''}</td>`).join('')}<td><b>${sum(v)}</b></td><td>${nf(sum(ps.map(p=>p.im[LAST])))}</td><td>${nf(sum(ps.map(p=>p.cl[LAST])))}</td></tr>`}).join('')}<tr class="tot"><td>Total</td>${cnt.slice(1).map(x=>`<td>${x}</td>`).join('')}<td>${first.length}</td><td>${nf(newIm[LAST])}</td><td>${nf(newCl[LAST])}</td></tr></tbody></table></div></div>
+ <div class="card"><h2>New pages list</h2><div class="bar"><div class="seg" id="m4"><button data-m="-1" aria-pressed="${st4.m===-1}">All</button>${M.slice(1).map((m,i)=>`<button data-m="${i+1}" aria-pressed="${st4.m===i+1}">${m}</button>`).join('')}</div><input type="search" id="nq" placeholder="Filter URL…"><span class="sub" id="nc"></span></div><div class="tw"><table id="ntab"></table></div></div>
+ <div class="card"><h2>Change log — new and updated pages</h2><div class="sub">Edit anything. It saves in this browser. Use Export to keep a copy or share it. Status: Done, To confirm, or Planned.</div><div class="bar" style="margin-top:8px"><button class="b p" id="addl">+ Add change</button><button class="b" id="expl">Export CSV</button><button class="b" id="rstl">Reset to starting list</button></div><div class="tw"><table id="ltab"></table></div></div>`;
+ $('#t4').innerHTML=h;
+ stackedBars($('#c5'),[cnt.map((v,i)=>i?v:0)],M,['var(--z2)'],['New pages']);
+ lines($('#c6'),[newIm],M,['var(--z2)'],['Impressions']);
+ const draw=()=>{const q=($('#nq').value||'').toLowerCase();const rs=first.filter(p=>(st4.m<0||p.f===st4.m)&&(!q||p.u.toLowerCase().includes(q))).sort((a,b)=>a.f-b.f||sum(b.im)-sum(a.im));
+  $('#nc').textContent=rs.length+' pages';
+  $('#ntab').innerHTML=`<thead><tr><th>Page</th><th class="l">Topic</th><th>First seen</th>${M.map(m=>`<th>${m}</th>`).join('')}<th>Impr.</th><th>Clicks</th></tr></thead><tbody>${rs.slice(0,300).map(p=>`<tr><td title="${esc(p.u)}">${esc(p.u.length>60?p.u.slice(0,58)+'…':p.u)}</td><td class="l">${esc(p.t)}</td><td>${M[p.f]}</td>${p.im.map((v,m)=>`<td style="${m<p.f?'':heat(v,0,Math.max(...p.im))}">${m<p.f?'':v||''}</td>`).join('')}<td><b>${nf(sum(p.im))}</b></td><td>${nf(sum(p.cl))}</td></tr>`).join('')}</tbody>`+(rs.length>300?`<caption class="sub">Showing the first 300 of ${rs.length}. Use the filter to narrow.</caption>`:'')};
+ draw();$('#nq').oninput=draw;$('#m4').onclick=e=>{const b=e.target.closest('button');if(!b)return;st4.m=+b.dataset.m;$('#m4').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()};
+ logUI();
+ $('#addl').onclick=()=>{LOG.push({type:'Updated',date:'2026-'+String(LAST+OFF+1).padStart(2,'0'),url:'',note:'',status:'Done'});saveLog(LOG);logUI()};
+ $('#rstl').onclick=()=>{if(confirm('Replace the change log with the starting list?')){LOG=SEED.map(x=>({...x}));saveLog(LOG);logUI()}};
+ $('#expl').onclick=()=>{const c='Type,Month,URL,Change,Status\n'+LOG.map(r=>[r.type,r.date,r.url,r.note,r.status].map(x=>'"'+String(x||'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/csv'}));a.download='ipg-change-log.csv';a.click()};
+}
+function logUI(){
+ const find=u=>PG.find(p=>p.u.replace(/\/$/,'')===String(u).trim().replace(/\/$/,'').replace(/^https?:\/\/industrialpumps\.nl/,''));
+ let h=`<thead><tr><th class="l">Type</th><th class="l">Month</th><th class="l">Page URL (path)</th><th class="l">What changed</th><th class="l">Status</th>${M.map(m=>`<th>${m}</th>`).join('')}<th>Impr. before→after</th><th>Clicks before→after</th><th></th></tr></thead><tbody>`;
+ LOG.forEach((r,i)=>{const p=find(r.url),m0=mIdx(r.date);let ba=['',''];
+  if(p&&m0>=0){const b=[m0-3,m0-2,m0-1].filter(x=>x>=0),a=[m0+1,m0+2,m0+3].filter(x=>x<NM);if(b.length&&a.length){const av=(arr,f)=>sum(arr.map(x=>f[x]))/arr.length;ba=[`${nf(av(b,p.im))} → ${nf(av(a,p.im))}`,`${av(b,p.cl).toFixed(1)} → ${av(a,p.cl).toFixed(1)}`]}else ba=['not enough months yet','']}
+  else if(r.url&&!p)ba=['page not found in GSC data',''];
+  h+=`<tr data-i="${i}"><td class="l"><select data-f="type"><option${r.type==='New'?' selected':''}>New</option><option${r.type==='Updated'?' selected':''}>Updated</option></select></td><td class="l"><input type="month" data-f="date" value="${esc(r.date)}"></td><td class="l"><input type="text" data-f="url" value="${esc(r.url)}" size="34"></td><td class="wrap"><input type="text" data-f="note" value="${esc(r.note)}" style="width:100%"></td><td class="l"><select data-f="status">${['Done','To confirm','Planned'].map(s=>`<option${r.status===s?' selected':''}>${s}</option>`).join('')}</select></td>${M.map((_,m)=>`<td style="${p?heat(p.im[m],0,Math.max(...p.im)):''}${m===m0?';outline:2px solid var(--acc);outline-offset:-2px':''}" title="${p?p.cl[m]+' clicks':''}">${p?p.im[m]||'':''}</td>`).join('')}<td>${ba[0]}</td><td>${ba[1]}</td><td><button class="b" data-del="${i}" title="Remove">✕</button></td></tr>`});
+ const t=$('#ltab');t.innerHTML=h+'</tbody>';
+ t.onchange=e=>{const tr=e.target.closest('tr');if(!tr||!e.target.dataset.f)return;LOG[+tr.dataset.i][e.target.dataset.f]=e.target.value;saveLog(LOG);if(e.target.dataset.f!=='note')logUI()};
+ t.onclick=e=>{const d=e.target.closest('[data-del]');if(d){LOG.splice(+d.dataset.del,1);saveLog(LOG);logUI()}};
+}
+// ---------- TAB 5
+function t5(){
+ const cats=[...new Set(ACT.map(a=>a[2]))];let flt='';
+ const groups={};ACT.forEach(a=>{(groups[a[0]]=groups[a[0]]||[]).push(a)});
+ const done=PLAN.filter(p=>p[5]==='Yes').length;
+ let h=`<div class="tiles"><div class="tile"><div class="l">Work items found on file (Mar–Nov)</div><div class="v">${ACT.length}</div></div><div class="tile"><div class="l">Plan items (Sep–Mar plan)</div><div class="v">${PLAN.length}</div></div><div class="tile"><div class="l">Marked completed in the plan</div><div class="v">${done}</div></div><div class="tile"><div class="l">Pages first seen in Google since Feb</div><div class="v">${PG.filter(p=>p.f>0).length}</div></div></div>
+ <div class="note" style="background:var(--card);border-color:var(--line)"><b style="color:var(--ink)">Where this comes from.</b> The activity list is built from the deliverables saved in the IPG SEO-GEO folder, dated by the file's last-saved date. Check it, and add anything that was done but never saved as a file. The plan table is copied from <i>Sep - Dec 26 IPG Plan.xlsx</i>, with its status column as filled in (blank means nobody marked it).</div>
+ <div class="card"><h2>Activities done, by month</h2><div class="bar"><select id="af"><option value="">All types</option>${cats.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div><div class="tl" id="tl"></div></div>
+ <div class="card"><h2>Plan Sep 2026 – Mar 2027 and status</h2><div class="tw"><table><thead><tr><th class="l">Month</th><th class="l">Timing</th><th class="l">Item</th><th class="l">Site / notes</th><th class="l">Owner</th><th class="l">Status</th></tr></thead><tbody>${PLAN.map(p=>`<tr><td class="l">${esc(p[0])}</td><td class="l">${esc(p[1])}</td><td class="wrap">${esc(p[2])}</td><td class="wrap">${esc(p[3])}</td><td class="l">${esc(p[4])}</td><td class="l"><span class="pill ${p[5]==='Yes'?'ok':p[5]==='No'?'pl':'no'}">${p[5]==='Yes'?'Completed':p[5]==='No'?'Not completed':'Not marked'}</span></td></tr>`).join('')}</tbody></table></div></div>`;
+ $('#t5').innerHTML=h;
+ const draw=()=>{flt=$('#af').value;$('#tl').innerHTML=Object.entries(groups).map(([m,a])=>{a=a.filter(x=>!flt||x[2]===flt);return a.length?`<div class="m">${m}</div>`+a.map(x=>`<div class="it"><span class="pill">${esc(x[2])}</span> ${esc(x[3])} <small>· ${esc(x[1])} · ${esc(x[4])}</small></div>`).join(''):''}).join('')};
+ draw();$('#af').onchange=draw;
+}
+const sl=(a,lo,hi)=>a.slice(lo,hi+1);
+function setRange(lo,hi){
+ const F=FULL;OFF=lo;
+ DATA={...F,months:sl(F.months,lo,hi),totals:Object.fromEntries(Object.entries(F.totals).map(([k,v])=>[k,sl(v,lo,hi)])),
+  zSel:sl(F.zSel,lo,hi),zFull:sl(F.zFull,lo,hi),gtot:sl(F.gtot,lo,hi),
+  selRows:F.selRows.map(r=>({...r,p:sl(r.p,lo,hi),c:sl(r.c,lo,hi),i:sl(r.i,lo,hi)})),
+  topics:F.topics.map(t=>({...t,cl:sl(t.cl,lo,hi),im:sl(t.im,lo,hi),pos:sl(t.pos,lo,hi),z:sl(t.z,lo,hi),vis:sl(t.vis,lo,hi)})),
+  ltopics:F.ltopics.map(t=>({...t,cl:sl(t.cl,lo,hi),im:sl(t.im,lo,hi),pos:sl(t.pos,lo,hi)})),
+  pages:F.pages.map(p=>({...p,f:p.f<0||p.f>hi?-1:Math.max(p.f-lo,0),cl:sl(p.cl,lo,hi),im:sl(p.im,lo,hi),p:sl(p.p,lo,hi)})),
+  ga:F.ga.map(g=>({...g,s:sl(g.s,lo,hi),pages:g.pages.map(x=>({...x,s:sl(x.s,lo,hi)}))}))};
+ M=DATA.months;NM=M.length;LAST=NM-1;
+ PG=DATA.pages.filter(p=>!p.u.startsWith('/Admin')&&!p.u.startsWith('/Files'));
+ $('#rl').textContent=`Showing ${M[0]} – ${M[LAST]} 2026 (${NM} months)`;
+ t1();t2();t3();t4();t5();
+}
+(function(){
+ const FM=FULL.months,rf=$('#rf'),rt=$('#rt');
+ const opts=FM.map((m,i)=>`<option value="${i}">${m} 2026</option>`).join('');rf.innerHTML=opts;rt.innerHTML=opts;
+ let lo=0,hi=FM.length-1;
+ const apply=()=>{if(hi<lo+1){if(lo>=FM.length-1)lo=FM.length-2;hi=lo+1}rf.value=lo;rt.value=hi;try{localStorage.setItem('ipgrange',lo+','+hi)}catch(_){}setRange(lo,hi)};
+ rf.onchange=()=>{lo=+rf.value;if(hi<lo+1)hi=Math.min(lo+1,FM.length-1);apply()};
+ rt.onchange=()=>{hi=+rt.value;if(lo>hi-1)lo=Math.max(hi-1,0);apply()};
+ $('#presets').onclick=e=>{const b=e.target.closest('button');if(!b)return;const p=b.dataset.p,n=FM.length;
+  if(p==='all'){lo=0;hi=n-1}else if(p==='ga'){lo=2;hi=n-1}else if(p==='q3'){lo=6;hi=8}else{lo=n-(+p);hi=n-1}apply()};
+ try{const s=(localStorage.getItem('ipgrange')||'').split(',').map(Number);if(s.length==2&&s[0]>=0&&s[1]<FM.length&&s[1]>s[0]){lo=s[0];hi=s[1]}}catch(_){}
+ apply();
+})();
+let ti=0;try{ti=+localStorage.getItem('ipgtab')||0}catch(_){}
+document.querySelectorAll('#nav button')[ti].click();
+</script>
+</body>
+</html>
